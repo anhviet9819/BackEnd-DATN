@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.model.Food;
 import com.example.backend.model.NutritionFact;
 import com.example.backend.service.IFoodService;
@@ -35,7 +36,69 @@ public class NutritionFactController {
                                                      @Validated @RequestBody NutritionFact nutritionFact){
         Food food = foodService.findById(foodId);
 
-        return nutritionFactService.createNutritionFact(nutritionFact);
+        return nutritionFactService.save(nutritionFact);
+    }
+
+    @PutMapping("/update/food/{foodid}")
+    public NutritionFact updateByFoodId(@PathVariable("foodid")Long foodid,
+                                        @Validated @RequestBody NutritionFact nutritionFactRequest){
+        NutritionFact nutritionFact = nutritionFactService.findByFoodId(foodid);
+        if(nutritionFact == null) throw new ResourceNotFoundException("Not found nutritionFact with FoodId: "+ foodid);
+        if(nutritionFactRequest.getServing_unit() != null){
+            nutritionFact.setServing_unit(nutritionFactRequest.getServing_unit());
+        }
+        if(nutritionFactRequest.getServing_weight_grams() != null){
+            nutritionFact.setServing_weight_grams(nutritionFactRequest.getServing_weight_grams());
+        }
+        if(nutritionFactRequest.getCalories() != null){
+            nutritionFact.setCalories(nutritionFactRequest.getCalories());
+        }
+        if(nutritionFactRequest.getFat() != null){
+            nutritionFact.setFat(nutritionFactRequest.getFat());
+        }
+        if(nutritionFactRequest.getSaturated_fat() != null){
+            nutritionFact.setSaturated_fat(nutritionFactRequest.getSaturated_fat());
+        }
+        if(nutritionFactRequest.getTrans_fat() != null){
+            nutritionFact.setTrans_fat(nutritionFactRequest.getTrans_fat());
+        }
+        if(nutritionFactRequest.getProtein() != null){
+            nutritionFact.setProtein(nutritionFactRequest.getProtein());
+        }
+        if(nutritionFactRequest.getCholesterol() != null){
+            nutritionFact.setCholesterol(nutritionFactRequest.getCholesterol());
+        }
+        if(nutritionFactRequest.getSodium() != null){
+            nutritionFact.setSodium(nutritionFactRequest.getSodium());
+        }
+        if(nutritionFactRequest.getPotassium() != null){
+            nutritionFact.setPotassium(nutritionFactRequest.getPotassium());
+        }
+        if(nutritionFactRequest.getCarbohydrates() != null){
+            nutritionFact.setCarbohydrates(nutritionFactRequest.getCarbohydrates());
+        }
+        if(nutritionFactRequest.getDiatery_fiber() != null){
+            nutritionFact.setDiatery_fiber(nutritionFactRequest.getDiatery_fiber());
+        }
+        if(nutritionFactRequest.getSugars() != null){
+            nutritionFact.setSugars(nutritionFactRequest.getSugars());
+        }
+        if(nutritionFactRequest.getCalcium() != null){
+            nutritionFact.setCalcium(nutritionFactRequest.getCalcium());
+        }
+        if(nutritionFactRequest.getVitamin_a() != null){
+            nutritionFact.setVitamin_a(nutritionFactRequest.getVitamin_a());
+        }
+        if(nutritionFactRequest.getVitamin_c() != null){
+            nutritionFact.setVitamin_c(nutritionFactRequest.getVitamin_c());
+        }
+        if(nutritionFactRequest.getIron() != null){
+            nutritionFact.setIron(nutritionFactRequest.getIron());
+        }
+        if(nutritionFactRequest.getUpdated_at() != null){
+            nutritionFact.setUpdated_at(nutritionFactRequest.getUpdated_at());
+        }
+        return nutritionFactService.save(nutritionFact);
     }
 
     @DeleteMapping("/delete/food/{foodid}")

@@ -25,7 +25,7 @@ public class NutritionFactService implements INutritionFactService {
     }
 
     @Override
-    public NutritionFact createNutritionFact(NutritionFact nutritionFact) {
+    public NutritionFact save(NutritionFact nutritionFact) {
         return nutritionFactRepository.save(nutritionFact);
     }
 

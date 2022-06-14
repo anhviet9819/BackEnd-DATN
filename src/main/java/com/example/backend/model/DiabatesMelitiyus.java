@@ -1,5 +1,7 @@
 package com.example.backend.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -17,8 +19,9 @@ public class DiabatesMelitiyus {
     @CreatedDate
     private Instant created_at;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_tracking_id", referencedColumnName = "id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UsersTracking usersTracking;
 
     public DiabatesMelitiyus() {

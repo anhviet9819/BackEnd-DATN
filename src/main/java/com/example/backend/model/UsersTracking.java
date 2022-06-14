@@ -3,6 +3,7 @@ package com.example.backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "users_tracking")
@@ -24,6 +25,10 @@ public class UsersTracking {
 
 //    @OneToMany(mappedBy="usersTracking")
 //    private Set<MealsTracking> mealsTrackings;
+
+    @OneToMany(mappedBy = "usersTracking", cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<PersonalIndex> personalIndices;
 
     public UsersTracking(Long id, Boolean is_diabates_meltiyus, Boolean is_blood_pressure_diseases, Boolean is_heart_diseases, Double current_height, Double current_weight, Integer current_diastolic, Integer current_systolic, Double current_blood_before_meal, Double current_normal_blood) {
         this.id = id;
