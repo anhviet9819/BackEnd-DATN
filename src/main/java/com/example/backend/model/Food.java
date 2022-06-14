@@ -48,6 +48,9 @@ public class Food {
 //    @JsonIgnore
 //    private Set<MealsTracking> mealsTracking = new HashSet<>();
 
+    @OneToOne(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
+    private NutritionFact nutritionFact;
+
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<MealFood> mealFood = new ArrayList<>();

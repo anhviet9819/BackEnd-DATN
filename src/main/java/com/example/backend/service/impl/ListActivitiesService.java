@@ -26,6 +26,11 @@ public class ListActivitiesService implements IListActivitiesService {
     }
 
     @Override
+    public ListActivities findByExistName(String name) {
+        return list_activitiesRepository.findByName(name);
+    }
+
+    @Override
     public ListActivities save(ListActivities list_activities) {
         return list_activitiesRepository.save(list_activities);
     }

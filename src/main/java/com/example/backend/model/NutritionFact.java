@@ -1,11 +1,17 @@
 package com.example.backend.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.time.Instant;
 
 @Entity(name = "nutrition_fact")
 public class NutritionFact {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String serving_unit;
 
     private Double serving_weight_grams;
@@ -40,16 +46,22 @@ public class NutritionFact {
 
     private Double iron;
 
-    private Instant updated_up;
+    private Instant updated_at;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "food_id", referencedColumnName = "id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Food food;
 
     public NutritionFact() {
     }
 
-    public NutritionFact(String serving_unit, Double serving_weight_grams, Double calories, Double fat, Double saturated_fat, Double trans_fat, Double protein, Double cholesterol, Double sodium, Double potassium, Double carbohydrates, Double diatery_fiber, Double sugars, Double vitamin_a, Double vitamin_c, Double calcium, Double iron, Instant updated_up, Food food) {
+    public NutritionFact(Food food) {
+        this.food = food;
+    }
+
+    public NutritionFact(Long id, String serving_unit, Double serving_weight_grams, Double calories, Double fat, Double saturated_fat, Double trans_fat, Double protein, Double cholesterol, Double sodium, Double potassium, Double carbohydrates, Double diatery_fiber, Double sugars, Double vitamin_a, Double vitamin_c, Double calcium, Double iron, Instant updated_at, Food food) {
+        this.id = id;
         this.serving_unit = serving_unit;
         this.serving_weight_grams = serving_weight_grams;
         this.calories = calories;
@@ -67,8 +79,16 @@ public class NutritionFact {
         this.vitamin_c = vitamin_c;
         this.calcium = calcium;
         this.iron = iron;
-        this.updated_up = updated_up;
+        this.updated_at = updated_at;
         this.food = food;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getServing_unit() {
@@ -207,12 +227,12 @@ public class NutritionFact {
         this.iron = iron;
     }
 
-    public Instant getUpdated_up() {
-        return updated_up;
+    public Instant getUpdated_at() {
+        return updated_at;
     }
 
-    public void setUpdated_up(Instant updated_up) {
-        this.updated_up = updated_up;
+    public void setUpdated_at(Instant updated_at) {
+        this.updated_at = updated_at;
     }
 
     public Food getFood() {

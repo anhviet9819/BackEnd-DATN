@@ -8,8 +8,12 @@ import com.example.backend.repository.FoodRepository;
 import com.example.backend.repository.MealsTrackingRepository;
 import com.example.backend.service.IFoodGroupService;
 import com.example.backend.service.IFoodService;
+import com.example.backend.service.INutritionFactService;
 import com.example.backend.service.impl.NutritionFactService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,23 +35,35 @@ public class FoodController {
     public MealsTrackingRepository mealsTrackingRepository;
 
     @Autowired
-    public NutritionFactService nutritionFactService;
+    public INutritionFactService nutritionFactService;
 
     @Autowired
     public FoodRepository foodRepository;
 
     @GetMapping("/search")
-    public List<Food> queryByGroupNameOrAll(@RequestParam(name = "group_name", required = false)String FoodGroupName){
-        if(FoodGroupName != null){
-            FoodGroup foodGroup = foodGroupRepository.findByNameContaining(FoodGroupName);  //Tim xem trong FoodGroup co group_name dang tim khong
-            if(foodGroup != null){
-                Long foodGroupId = foodGroup.getId();
-                return foodService.queryByFoodGroup(foodGroupId);
-            }
-            else return foodService.queryAll();
-        }
-        return foodService.queryAll();  // Chua throw exception
+    public Page<Food> queryByGroupNameOrAll(
+//            @RequestParam(name = "group_name", required = false)String FoodGroupName,
+                                            @RequestParam(defaultValue = "0")int page,
+                                            @RequestParam(defaultValue = "8")int size,
+                                            @RequestParam(defaultValue = "") String nameContaining){
+//        if(FoodGroupName != null){
+//            FoodGroup foodGroup = foodGroupRepository.findByNameContaining(FoodGroupName);  //Tim xem trong FoodGroup co group_name dang tim khong
+//            if(foodGroup != null){
+//                Long foodGroupId = foodGroup.getId();
+//                return foodService.queryByFoodGroup(foodGroupId);
+//            }
+//            else return foodService.queryAll();
+//        }
+        Pageable paging = PageRequest.of(page, size);
+        return foodRepository.findAllFoodByNameContainingOrderById(paging, nameContaining);  // Chua throw exception
     }
+//    @GetMapping("/search")
+//    public Page<Food> findAll(@RequestParam(defaultValue = "0")int page,
+//    @RequestParam(defaultValue = "10")int size,
+//    @RequestParam(defaultValue = "")String nameContaining){
+//        Pageable paging = PageRequest.of(page, size);
+//        return foodRepository.findFoodByNameContaining(paging, nameContaining);
+//    }
 
     @GetMapping("/details/{id}")
     public Food findById(@PathVariable("id")Long id){
@@ -67,7 +83,7 @@ public class FoodController {
 //        return foodService.queryByMealsTrackingId(mealstrackingid);
 //    }
 
-    @PostMapping("/create/food/{foodgroupid}")
+    @PostMapping("/create/foodgroup/{foodgroupid}")
     public Food createFoodByFoodGroupId(@PathVariable("foodgroupid")Long foodGroupId,
                                         @RequestBody Food food) {
         FoodGroup foodGroup = foodGroupRepository.findById(foodGroupId).orElse(null);
@@ -77,8 +93,13 @@ public class FoodController {
 //        Long foodGroupThatFoodAdded = foodGroupId;
         Long foodId = foodGroupId * 100000000 + foodRepository.countFoodByFoodGroupId(foodGroupId) + 1;
 
-//        return foodService.save(food);
-        return foodService.save(new Food(foodId, food.getName(), Instant.now(), foodGroup));
+//        Food foodSave = new Food(foodId, food.getName(), Instant.now(), foodGroup);
+
+        Food foodSave = foodService.save(new Food(foodId, food.getName(), Instant.now(), foodGroup));
+
+        nutritionFactService.save(new NutritionFact(foodSave));
+
+        return foodSave;
     }
 
 //    @PostMapping("/add/mealstracking/{mealstrackingid}/food")
@@ -180,7 +201,9 @@ public class FoodController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
-        foodService.delete(id);
+//        nutritionFactService.deleteNutritonFactByFoodId(id);
+        Food foodDelete = foodService.findById(id);
+        foodRepository.delete(foodDelete);
         return ResponseEntity.ok().build();
     }
 

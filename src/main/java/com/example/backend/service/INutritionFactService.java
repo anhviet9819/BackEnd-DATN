@@ -9,7 +9,7 @@ public interface INutritionFactService {
 
     NutritionFact findByFoodId(Long foodId);
 
-    NutritionFact createNutritionFact(NutritionFact nutritionFact);
+    NutritionFact save(NutritionFact nutritionFact);
 
     void deleteNutritonFactByFoodId(Long foodId);
 }
