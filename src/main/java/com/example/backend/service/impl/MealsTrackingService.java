@@ -1,7 +1,11 @@
 package com.example.backend.service.impl;
 
+import com.example.backend.model.MealFood;
 import com.example.backend.model.MealsTracking;
+import com.example.backend.model.NutritionFact;
+import com.example.backend.repository.MealFoodRepository;
 import com.example.backend.repository.MealsTrackingRepository;
+import com.example.backend.repository.NutritionFactRepository;
 import com.example.backend.service.IMealsTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +17,12 @@ public class MealsTrackingService implements IMealsTrackingService {
 
     @Autowired
     public MealsTrackingRepository mealsTrackingRepository;
+
+    @Autowired
+    public MealFoodRepository mealFoodRepository;
+
+    @Autowired
+    public NutritionFactRepository nutritionFactRepository;
 
     @Override
     public List<MealsTracking> findAll() {
@@ -38,6 +48,24 @@ public class MealsTrackingService implements IMealsTrackingService {
     @Override
     public MealsTracking save(MealsTracking mealsTracking) {
         return mealsTrackingRepository.save(mealsTracking);
+    }
+
+    //Tinh toan calories cho bua an
+    @Override
+    public Double calculateMealVolumeByMealTrackingId(Long mealTrackingId) {
+        Double mealVolume = 0.0;
+        List<MealFood> mealFoods = mealFoodRepository.findMealFoodByMealsTrackingId(mealTrackingId);
+//        System.out.println(mealFoods.size());
+        for(int i = 0; i < mealFoods.size(); i++){
+//            System.out.println(i);
+            Double foodVolume = mealFoods.get(i).getFood_volume();
+            NutritionFact nutritionFactSearching = nutritionFactRepository.findNutritionFactByFoodId(mealFoods.get(i).getFood().getId());
+            Double servingWeightGrams = nutritionFactSearching.getServing_weight_grams();
+            Double foodCaloriesPer100gam = nutritionFactSearching.getCalories();
+            Double foodCalories = foodVolume / servingWeightGrams * foodCaloriesPer100gam;
+            mealVolume += foodCalories;
+        }
+        return mealVolume;
     }
 
     @Override

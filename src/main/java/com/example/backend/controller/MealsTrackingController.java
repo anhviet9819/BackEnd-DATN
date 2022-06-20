@@ -63,6 +63,7 @@ public class MealsTrackingController {
 
         mealsTracking.setUsersTracking(usersTrackingRepository.findById(usertrackingid).
                 orElseThrow(() -> new ResourceAccessException("Not found Userstracking with id = " + usertrackingid)));
+        mealsTracking.setMeal_volume(0.0);
         return mealsTrackingService.save(mealsTracking);
 //        return mealsTrackingService.save(new MealsTracking(mealsTracking.getId(),mealsTracking.getName(),mealsTracking.getDescription(),mealsTracking.getType(),mealsTracking.getMeal_volume(),mealsTracking.getCreated_at()));
     }

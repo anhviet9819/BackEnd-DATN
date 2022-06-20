@@ -48,26 +48,37 @@ public class ActivitiesTrackingController {
         activitiesTracking.setUsersTracking(usersTrackingRepository.findById(usertrackingid).
                 orElseThrow(() -> new ResourceAccessException("Not found Userstracking with id = " + usertrackingid)));
 
-        ListActivities activityAdding = listActivitiesService.findByExistName(activitiesTracking.getListActivities().getName());
+//        ListActivities activityAdding = listActivitiesService.findByExistName(activitiesTracking.getListActivities().getName());
 //        System.out.println("Ten la:" + activityAdding.getName());
+
+        ListActivities activityAdding = listActivitiesService.findById(activitiesTracking.getListActivities().getId());
+
         Long epochStartTime = activitiesTracking.getStart_time().getEpochSecond();
         Long epochEndTime = activitiesTracking.getEnd_time().getEpochSecond();
         Long timeActive = epochEndTime - epochStartTime;
 
-//        System.out.println(activitiesTracking.getStart_time());
-//        System.out.println(activitiesTracking.getEnd_time());
+        if(activityAdding != null){
+            Double realCaloLoss = activityAdding.getCalo_per_hour() * timeActive / 3600;
 
-        Double realCaloLoss = activityAdding.getCalo_per_hour() * timeActive / 3600;
+            ActivitiesTracking activitiesTracking1 = new ActivitiesTracking(realCaloLoss, Instant.now(), activitiesTracking.getStart_time(), activitiesTracking.getEnd_time(), activitiesTracking.getUsersTracking(), activityAdding);
+            return activitiesTrackingService.save(activitiesTracking1);
+        }
+        else {
+            ListActivities newActivityAdding = new ListActivities(activitiesTracking.getListActivities().getName(), activitiesTracking.getListActivities().getCalo_per_hour(), false, "U4");
+            listActivitiesService.save(newActivityAdding);
 
-        ActivitiesTracking activitiesTracking1 = new ActivitiesTracking(realCaloLoss, Instant.now(), activitiesTracking.getStart_time(), activitiesTracking.getEnd_time(), activitiesTracking.getUsersTracking(), activityAdding);
-        return activitiesTrackingService.save(activitiesTracking1);
+            Double realCaloLoss = newActivityAdding.getCalo_per_hour() * timeActive / 3600;
+            ActivitiesTracking activitiesTracking1 = new ActivitiesTracking(realCaloLoss, Instant.now(), activitiesTracking.getStart_time(), activitiesTracking.getEnd_time(), activitiesTracking.getUsersTracking(), newActivityAdding);
+            return activitiesTrackingService.save(activitiesTracking1);
+
+        }
     }
 
     @PutMapping("update/{id}")
     public ActivitiesTracking updateActivitiesTrackingById(@PathVariable("id")Long id,
                                                            @Validated @RequestBody ActivitiesTracking activitiesTrackingRequest){
         ActivitiesTracking activitiesTracking = activitiesTrackingService.findById(id);
-
+        System.out.println("Viet");
         if(activitiesTrackingRequest.getCreated_at() != null){
             activitiesTracking.setCreated_at(activitiesTrackingRequest.getCreated_at());
         }
@@ -78,7 +89,8 @@ public class ActivitiesTrackingController {
             activitiesTracking.setEnd_time(activitiesTrackingRequest.getEnd_time());
         }
         if(activitiesTrackingRequest.getListActivities() != null){
-            ListActivities listActivitiesRequest = listActivitiesService.findByExistName(activitiesTrackingRequest.getListActivities().getName());
+//            ListActivities listActivitiesRequest = listActivitiesService.findByExistName(activitiesTrackingRequest.getListActivities().getName());
+            ListActivities listActivitiesRequest = listActivitiesService.findById(activitiesTrackingRequest.getListActivities().getId());
             activitiesTracking.setListActivities(listActivitiesRequest);
             // Doan nay can xem lai
             // Neu nguoi dung sua lai type_activity
@@ -90,12 +102,15 @@ public class ActivitiesTrackingController {
             activitiesTracking.setCalo_loss(realCaloLoss);
         }
         //Khong sua type_activity
-        Long epochStartTime = activitiesTracking.getStart_time().getEpochSecond();
-        Long epochEndTime = activitiesTracking.getEnd_time().getEpochSecond();
-        Long timeActive = epochEndTime - epochStartTime;
+        else{
+            Long epochStartTime = activitiesTracking.getStart_time().getEpochSecond();
+            Long epochEndTime = activitiesTracking.getEnd_time().getEpochSecond();
+            Long timeActive = epochEndTime - epochStartTime;
 
-        Double realCaloLoss = activitiesTracking.getListActivities().getCalo_per_hour() * timeActive / 3600;
-        activitiesTracking.setCalo_loss(realCaloLoss);
+            Double realCaloLoss = activitiesTracking.getListActivities().getCalo_per_hour() * timeActive / 3600;
+            activitiesTracking.setCalo_loss(realCaloLoss);
+        }
+
 
         return activitiesTrackingService.save(activitiesTracking);
     }

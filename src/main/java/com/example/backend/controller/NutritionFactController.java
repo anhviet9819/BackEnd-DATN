@@ -2,9 +2,13 @@ package com.example.backend.controller;
 
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.model.Food;
+import com.example.backend.model.MealFood;
+import com.example.backend.model.MealsTracking;
 import com.example.backend.model.NutritionFact;
+import com.example.backend.repository.MealFoodRepository;
 import com.example.backend.service.IFoodService;
 import com.example.backend.service.INutritionFactService;
+import com.example.backend.service.impl.MealsTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +24,12 @@ public class NutritionFactController {
 
     @Autowired
     public IFoodService foodService;
+
+    @Autowired
+    public MealFoodRepository mealFoodRepository;
+
+    @Autowired
+    public MealsTrackingService mealsTrackingService;
 
     @GetMapping("/search")
     public List<NutritionFact> getAll(){
@@ -44,12 +54,14 @@ public class NutritionFactController {
                                         @Validated @RequestBody NutritionFact nutritionFactRequest){
         NutritionFact nutritionFact = nutritionFactService.findByFoodId(foodid);
         if(nutritionFact == null) throw new ResourceNotFoundException("Not found nutritionFact with FoodId: "+ foodid);
-        if(nutritionFactRequest.getServing_unit() != null){
-            nutritionFact.setServing_unit(nutritionFactRequest.getServing_unit());
-        }
-        if(nutritionFactRequest.getServing_weight_grams() != null){
-            nutritionFact.setServing_weight_grams(nutritionFactRequest.getServing_weight_grams());
-        }
+//        if(nutritionFactRequest.getServing_unit() != null){
+//            nutritionFact.setServing_unit(nutritionFactRequest.getServing_unit());
+//        }
+//        if(nutritionFactRequest.getServing_weight_grams() != null){
+//            nutritionFact.setServing_weight_grams(nutritionFactRequest.getServing_weight_grams());
+//        }
+        nutritionFact.setServing_unit("g");
+        nutritionFact.setServing_weight_grams(100.0);
         if(nutritionFactRequest.getCalories() != null){
             nutritionFact.setCalories(nutritionFactRequest.getCalories());
         }
@@ -98,7 +110,20 @@ public class NutritionFactController {
         if(nutritionFactRequest.getUpdated_at() != null){
             nutritionFact.setUpdated_at(nutritionFactRequest.getUpdated_at());
         }
-        return nutritionFactService.save(nutritionFact);
+        NutritionFact nutritionFact1 = nutritionFactService.save(nutritionFact);
+        // update lai mealCalories khi update nutritionFact
+        List<MealFood> mealFoods = mealFoodRepository.findMealFoodByFoodId(foodid);
+        if(mealFoods != null){
+            for(MealFood mealFoodEl: mealFoods){
+                Double mealCaloriesUpdate = 0.0;
+                mealCaloriesUpdate = mealsTrackingService.calculateMealVolumeByMealTrackingId(mealFoodEl.getId().getMeal_tracking_id());
+                MealsTracking mealsTrackingUpdate = mealsTrackingService.findById(mealFoodEl.getId().getMeal_tracking_id());
+                mealsTrackingUpdate.setMeal_volume(mealCaloriesUpdate);
+                mealsTrackingService.save(mealsTrackingUpdate);
+            }
+        }
+
+        return nutritionFact1;
     }
 
     @DeleteMapping("/delete/food/{foodid}")

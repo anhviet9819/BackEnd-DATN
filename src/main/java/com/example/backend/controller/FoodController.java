@@ -8,6 +8,7 @@ import com.example.backend.repository.FoodRepository;
 import com.example.backend.repository.MealsTrackingRepository;
 import com.example.backend.service.IFoodGroupService;
 import com.example.backend.service.IFoodService;
+import com.example.backend.service.IMealsTrackingService;
 import com.example.backend.service.INutritionFactService;
 import com.example.backend.service.impl.NutritionFactService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +36,14 @@ public class FoodController {
     public MealsTrackingRepository mealsTrackingRepository;
 
     @Autowired
+    public IMealsTrackingService mealsTrackingService;
+
+    @Autowired
     public INutritionFactService nutritionFactService;
 
     @Autowired
     public FoodRepository foodRepository;
+
 
     @GetMapping("/search")
     public Page<Food> queryByGroupNameOrAll(
@@ -73,6 +78,11 @@ public class FoodController {
     @GetMapping("/details/count/{foodgroupid}")
     public Long countByFoodGroupId(@PathVariable("foodgroupid")Long foodGroupId){
         return foodRepository.countFoodByFoodGroupId(foodGroupId);
+    }
+
+    @GetMapping("/calculate/{mealtrackingid}")
+    public Double calculateMealVolumeByMealTrackingId(@PathVariable("mealtrackingid")Long mealtrackingid){
+        return mealsTrackingService.calculateMealVolumeByMealTrackingId(mealtrackingid);
     }
 
 //    @GetMapping("details/mealstracking/{mealstrackingid}/food")
@@ -125,31 +135,78 @@ public class FoodController {
 //        return foodService.save(foodRequest);
 //    }
 
-        @PostMapping("/add/mealstracking/{mealstrackingid}/food")
-        public Food addFood(@PathVariable("mealstrackingid")Long mealstrackingid,
+//        @PostMapping("/add/mealstracking/{mealstrackingid}/food")
+//        public Food addFood(@PathVariable("mealstrackingid")Long mealstrackingid,
+//                        @RequestBody FoodVolume foodVolume){
+//        MealsTracking mealsTracking = mealsTrackingRepository.findById(mealstrackingid).orElse(null);
+//        Food food = foodService.findByExistName(foodVolume.getFood().getName());
+//
+////        FoodGroup foodGroup1 = foodGroupRepository.findByNameContaining(foodVolume.getFood().getFoodGroup().getGroup_name());
+////        System.out.println(foodGroup1.getId()* 100000000 + foodRepository.countFoodByFoodGroupId(foodGroup1.getId()) + 1);
+////        Food foodAdded = foodService.save(new Food(foodGroup1.getId()* 100000000 + foodRepository.countFoodByFoodGroupId(foodGroup1.getId()) + 1, foodVolume.getFood().getName(), Instant.now(), foodGroupRepository.findByNameContaining(foodVolume.getFood().getFoodGroup().getGroup_name())));
+////        System.out.println(foodAdded.getName());
+//
+//        // food is existed
+//        if (food != null) {
+//            NutritionFact nutritionFactFoodAdded = nutritionFactService.findByFoodId(food.getId());
+//            Double foodAddedCalories = 0.0;
+//            foodAddedCalories = foodVolume.getFood_volume()/nutritionFactFoodAdded.getServing_weight_grams()*nutritionFactFoodAdded.getCalories();
+////            System.out.println("Kiem tra ti: " + foodAddedCalories);
+//            MealFoodId mealFoodId = new MealFoodId(food.getId(), mealstrackingid);
+//            mealsTracking.addFood(new MealFood(mealFoodId, foodVolume.getFood_volume(), mealsTracking, food));
+//
+//            if(mealsTracking.getMeal_volume() == null){
+//                mealsTracking.setMeal_volume(0.0);
+//            }
+//            mealsTracking.setMeal_volume(mealsTracking.getMeal_volume() + foodAddedCalories);
+//
+//            mealsTrackingRepository.save(mealsTracking);
+//            return food;
+//        }
+//
+//        // add and create new food
+//        FoodGroup foodGroup = foodGroupRepository.findByNameContaining(foodVolume.getFood().getFoodGroup().getGroup_name());
+//        Long foodGroupIdThatFoodAdded = foodGroup.getId();
+//        Long foodAddedId = foodGroupIdThatFoodAdded * 100000000 + foodRepository.countFoodByFoodGroupId(foodGroupIdThatFoodAdded) + 1;
+//
+//        foodVolume.getFood().setId(foodAddedId);
+//        foodVolume.getFood().setFoodGroup(foodGroup);
+//
+//        Food foodAdded1 = foodService.save(new Food(foodAddedId, foodVolume.getFood().getName(), false, "U4" , Instant.now(), foodGroup));
+//        nutritionFactService.save(new NutritionFact(foodAdded1));
+//
+//        MealFoodId mealFoodId = new MealFoodId(foodAdded1.getId(), mealstrackingid);
+//        mealsTracking.addFood(new MealFood(mealFoodId, foodVolume.getFood_volume(), mealsTracking, foodAdded1));
+//        mealsTrackingRepository.save(mealsTracking);
+//
+//        return foodAdded1;
+//    }
+
+    @PostMapping("/add/mealstracking/{mealstrackingid}/food")
+    public Food addFood(@PathVariable("mealstrackingid")Long mealstrackingid,
                         @RequestBody FoodVolume foodVolume){
         MealsTracking mealsTracking = mealsTrackingRepository.findById(mealstrackingid).orElse(null);
-        Food food = foodService.findByExistName(foodVolume.getFood().getName());
-
-//        FoodGroup foodGroup1 = foodGroupRepository.findByNameContaining(foodVolume.getFood().getFoodGroup().getGroup_name());
-//        System.out.println(foodGroup1.getId()* 100000000 + foodRepository.countFoodByFoodGroupId(foodGroup1.getId()) + 1);
-//        Food foodAdded = foodService.save(new Food(foodGroup1.getId()* 100000000 + foodRepository.countFoodByFoodGroupId(foodGroup1.getId()) + 1, foodVolume.getFood().getName(), Instant.now(), foodGroupRepository.findByNameContaining(foodVolume.getFood().getFoodGroup().getGroup_name())));
-//        System.out.println(foodAdded.getName());
-
+//        Food food = foodService.findByExistName(foodVolume.getFood().getName());
+        Food food = foodService.findById(foodVolume.getFood().getId());
         // food is existed
         if (food != null) {
-            NutritionFact nutritionFactFoodAdded = nutritionFactService.findByFoodId(food.getId());
-            Double foodAddedCalories = 0.0;
-            foodAddedCalories = foodVolume.getFood_volume()/nutritionFactFoodAdded.getServing_weight_grams()*nutritionFactFoodAdded.getCalories();
+//            NutritionFact nutritionFactFoodAdded = nutritionFactService.findByFoodId(food.getId());
+//            Double foodAddedCalories = 0.0;
+//            foodAddedCalories = foodVolume.getFood_volume()/nutritionFactFoodAdded.getServing_weight_grams()*nutritionFactFoodAdded.getCalories();
 //            System.out.println("Kiem tra ti: " + foodAddedCalories);
             MealFoodId mealFoodId = new MealFoodId(food.getId(), mealstrackingid);
             mealsTracking.addFood(new MealFood(mealFoodId, foodVolume.getFood_volume(), mealsTracking, food));
+            mealsTrackingRepository.save(mealsTracking);
 
-            if(mealsTracking.getMeal_volume() == null){
-                mealsTracking.setMeal_volume(0.0);
-            }
-            mealsTracking.setMeal_volume(mealsTracking.getMeal_volume() + foodAddedCalories);
+//            if(mealsTracking.getMeal_volume() == null){
+//                mealsTracking.setMeal_volume(0.0);
+//            }
+//            mealsTracking.setMeal_volume(mealsTracking.getMeal_volume() + foodAddedCalories);
+//            List<MealFood> mealFoods = mealsTracking.getMealFoods();
 
+            Double mealCaloriesServing = mealsTrackingService.calculateMealVolumeByMealTrackingId(mealstrackingid);
+            mealsTracking.setMeal_volume(mealCaloriesServing);
+            System.out.println(mealsTracking.getMeal_volume());
             mealsTrackingRepository.save(mealsTracking);
             return food;
         }
@@ -162,7 +219,9 @@ public class FoodController {
         foodVolume.getFood().setId(foodAddedId);
         foodVolume.getFood().setFoodGroup(foodGroup);
 
-        Food foodAdded1 = foodService.save(new Food(foodAddedId, foodVolume.getFood().getName(), Instant.now(), foodGroup));
+        Food foodAdded1 = foodService.save(new Food(foodAddedId, foodVolume.getFood().getName(), false, "U4" , Instant.now(), foodGroup));
+        nutritionFactService.save(new NutritionFact(foodAdded1));
+
         MealFoodId mealFoodId = new MealFoodId(foodAdded1.getId(), mealstrackingid);
         mealsTracking.addFood(new MealFood(mealFoodId, foodVolume.getFood_volume(), mealsTracking, foodAdded1));
         mealsTrackingRepository.save(mealsTracking);

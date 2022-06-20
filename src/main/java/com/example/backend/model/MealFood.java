@@ -1,6 +1,8 @@
 package com.example.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -18,11 +20,13 @@ public class MealFood {
     @ManyToOne
     @MapsId("mealTrackingId")
     @JoinColumn(name = "meal_tracking_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     MealsTracking mealsTracking;
 
     @ManyToOne
     @MapsId("foodId")
     @JoinColumn(name = "food_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     Food food;
 
     public MealFood(MealFoodId id, Double food_volume, MealsTracking mealsTracking, Food food) {

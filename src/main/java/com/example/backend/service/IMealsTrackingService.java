@@ -11,5 +11,7 @@ public interface IMealsTrackingService {
 
     List<MealsTracking> findByUserstrackingId(Long userstrackingId);
     MealsTracking save(MealsTracking mealsTracking);
+
+    Double calculateMealVolumeByMealTrackingId(Long mealTrackingId);
     void delete(Long id);
 }

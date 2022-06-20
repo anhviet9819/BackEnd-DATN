@@ -40,6 +40,8 @@ public class User {
 //    @NotBlank
     private Date birthday;
 
+    private Boolean is_active;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_tracking_id", referencedColumnName = "id")
     private UsersTracking usersTracking;
@@ -57,6 +59,18 @@ public class User {
         this.username = username;
         this.email = email;
         this.password = password;
+    }
+
+    public User(Long id, String username, String email, String password, String name, Date birthday, Boolean is_active, UsersTracking usersTracking, Set<Role> roles) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.birthday = birthday;
+        this.is_active = is_active;
+        this.usersTracking = usersTracking;
+        this.roles = roles;
     }
 
     public User(String username, String email, String password, UsersTracking usersTracking) {
@@ -138,5 +152,13 @@ public class User {
 
     public void setUsersTracking(UsersTracking usersTracking) {
         this.usersTracking = usersTracking;
+    }
+
+    public Boolean getIs_active() {
+        return is_active;
+    }
+
+    public void setIs_active(Boolean is_active) {
+        this.is_active = is_active;
     }
 }
