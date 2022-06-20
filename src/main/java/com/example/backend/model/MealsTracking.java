@@ -26,6 +26,7 @@ public class MealsTracking {
     private Double meal_volume;
 
     @CreatedDate
+    @NotNull
     private Instant created_at;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -60,6 +60,8 @@ public class NutritionFact {
         this.food = food;
     }
 
+
+
     public NutritionFact(Long id, String serving_unit, Double serving_weight_grams, Double calories, Double fat, Double saturated_fat, Double trans_fat, Double protein, Double cholesterol, Double sodium, Double potassium, Double carbohydrates, Double diatery_fiber, Double sugars, Double vitamin_a, Double vitamin_c, Double calcium, Double iron, Instant updated_at, Food food) {
         this.id = id;
         this.serving_unit = serving_unit;

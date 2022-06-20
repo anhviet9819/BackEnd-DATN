@@ -1,6 +1,7 @@
 package com.example.backend.service.impl;
 
 import com.example.backend.model.ActivitiesTracking;
+import com.example.backend.model.ListActivities;
 import com.example.backend.repository.ActivitiesTrackingRepository;
 import com.example.backend.service.IActivitiesTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,15 @@ public class ActivitiesTrackingService implements IActivitiesTrackingService {
     public ActivitiesTracking save(ActivitiesTracking activitiesTracking) {
         return activitiesTrackingRepository.save(activitiesTracking);
     }
+
+//    @Override
+//    public Double calculateCaloPerHour(Long listActivitiesId) {
+//        List<ActivitiesTracking> activitiesTrackingList = activitiesTrackingRepository.findActivitiesTrackingByListActivitiesId(listActivitiesId);
+//        for(ActivitiesTracking activitiesTrackingEl : activitiesTrackingList){
+//
+//        }
+//        return null;
+//    }
 
     @Override
     public void deleteById(Long id) {

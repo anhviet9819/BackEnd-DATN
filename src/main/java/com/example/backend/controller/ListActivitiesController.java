@@ -1,6 +1,8 @@
 package com.example.backend.controller;
 
+import com.example.backend.model.ActivitiesTracking;
 import com.example.backend.model.ListActivities;
+import com.example.backend.repository.ActivitiesTrackingRepository;
 import com.example.backend.repository.ListActivitiesRepository;
 import com.example.backend.service.IListActivitiesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class ListActivitiesController {
 
     @Autowired
     ListActivitiesRepository listActivitiesRepository;
+
+    @Autowired
+    ActivitiesTrackingRepository activitiesTrackingRepository;
 
 //    @GetMapping("/search")
 //    public List<ListActivities> queryAll(){
@@ -53,11 +58,32 @@ public class ListActivitiesController {
     public ListActivities updateActivity(@PathVariable("id") Long id,
                                          @Validated @RequestBody ListActivities activityRequest){
         ListActivities activity = service.findById(id);
-        activity.setName(activityRequest.getName());
-        activity.setCalo_per_hour(activityRequest.getCalo_per_hour());
-        activity.setCalo_per_seconds(activityRequest.getCalo_per_seconds());
+        if(activityRequest.getName() != null){
+            activity.setName(activityRequest.getName());
+        }
+        if(activityRequest.getCalo_per_hour() != null){
+            activity.setCalo_per_hour(activityRequest.getCalo_per_hour());
+        }
+        if(activityRequest.getOwner() != null){
+            activity.setOwner(activityRequest.getOwner());
+        }
+        if(activityRequest.getScope() != null){
+            activity.setScope(activityRequest.getScope());
+        }
+        service.save(activity);
 
-        return service.save(activity);
+        //update lai cac activitiesTracking moi khi update thong tin ve listactivities
+        List<ActivitiesTracking> activitiesTrackingList = activitiesTrackingRepository.findActivitiesTrackingByListActivitiesId(id);
+        for(ActivitiesTracking activitiesTrackingEl : activitiesTrackingList){
+            Long epochStartTime = activitiesTrackingEl.getStart_time().getEpochSecond();
+            Long epochEndTime = activitiesTrackingEl.getEnd_time().getEpochSecond();
+            Long timeActive = epochEndTime - epochStartTime;
+
+            Double caloLoss = activitiesTrackingEl.getListActivities().getCalo_per_hour()*timeActive/3600;
+            activitiesTrackingEl.setCalo_loss(caloLoss);
+            activitiesTrackingRepository.save(activitiesTrackingEl);
+        }
+        return activity;
     }
 
     @DeleteMapping("/delete/{id}")

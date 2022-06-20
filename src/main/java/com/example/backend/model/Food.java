@@ -85,6 +85,15 @@ public class Food {
         this.foodGroup = foodGroup;
     }
 
+    public Food(Long id, String name, Boolean owner, String scope, Instant created_at, FoodGroup foodGroup) {
+        this.id = id;
+        this.name = name;
+        this.owner = owner;
+        this.scope = scope;
+        this.created_at = created_at;
+        this.foodGroup = foodGroup;
+    }
+
     public Food() {
 
     }

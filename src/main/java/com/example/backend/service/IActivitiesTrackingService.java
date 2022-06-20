@@ -13,5 +13,7 @@ public interface IActivitiesTrackingService {
 
     ActivitiesTracking save(ActivitiesTracking activitiesTracking);
 
+//    Double calculateCaloPerHour(Long activitiesTrackingId);
+
     void deleteById(Long id);
 }

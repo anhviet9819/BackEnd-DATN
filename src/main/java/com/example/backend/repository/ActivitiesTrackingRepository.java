@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface ActivitiesTrackingRepository extends JpaRepository<ActivitiesTracking, Long> {
     List<ActivitiesTracking> findActivitiesTrackingByUsersTrackingId(Long userstrackingId);
+
+    List<ActivitiesTracking> findActivitiesTrackingByListActivitiesId(Long listActivitiesId);
 }

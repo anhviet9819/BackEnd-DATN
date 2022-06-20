@@ -2,6 +2,7 @@ package com.example.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sun.istack.NotNull;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,14 +20,20 @@ public class ListActivities {
     private String name;
     @NotNull
     private Double calo_per_hour;
-    @NotNull
-    private Double calo_per_seconds;
+    private Boolean owner;
+    private String scope;
 
     public ListActivities(Long id, String name, Double calo_per_hour, Double calo_per_seconds) {
         this.id = id;
         this.name = name;
         this.calo_per_hour = calo_per_hour;
-        this.calo_per_seconds = calo_per_seconds;
+    }
+
+    public ListActivities(String name, Double calo_per_hour, Boolean owner, String scope) {
+        this.name = name;
+        this.calo_per_hour = calo_per_hour;
+        this.owner = owner;
+        this.scope = scope;
     }
 
     public ListActivities(String name, Double calo_per_hour) {
@@ -62,11 +69,19 @@ public class ListActivities {
         this.calo_per_hour = calo_per_hour;
     }
 
-    public Double getCalo_per_seconds() {
-        return calo_per_seconds;
+    public Boolean getOwner() {
+        return owner;
     }
 
-    public void setCalo_per_seconds(Double calo_per_seconds) {
-        this.calo_per_seconds = calo_per_seconds;
+    public void setOwner(Boolean owner) {
+        this.owner = owner;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 }
