@@ -17,7 +17,8 @@ public class DiabatesMelitiyus {
     private Double blood_glucose_after_meal;
 
     @CreatedDate
-    private Instant created_at;
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_tracking_id", referencedColumnName = "id")
@@ -30,7 +31,7 @@ public class DiabatesMelitiyus {
     public DiabatesMelitiyus(Double blood_glucose_before_meal, Double blood_glucose_after_meal, Instant created_at, UsersTracking usersTracking) {
         this.blood_glucose_before_meal = blood_glucose_before_meal;
         this.blood_glucose_after_meal = blood_glucose_after_meal;
-        this.created_at = created_at;
+        this.createdAt = created_at;
         this.usersTracking = usersTracking;
     }
 
@@ -59,11 +60,11 @@ public class DiabatesMelitiyus {
     }
 
     public Instant getCreated_at() {
-        return created_at;
+        return createdAt;
     }
 
     public void setCreated_at(Instant created_at) {
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 
     public UsersTracking getUsersTracking() {

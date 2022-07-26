@@ -61,4 +61,15 @@ public class FoodService implements IFoodService {
     public void delete(Long id) {
         foodRepository.deleteById(id);
     }
+
+    @Override
+    public Long generateFoodId(Long foodGroupId) {
+        List<Food> foodList = foodRepository.findFoodByFoodGroupIdOrderById(foodGroupId);
+        if(foodList.size() == 0) {
+            return 1500000001L;
+        }
+        Food foodMaxId = foodList.get(foodList.size() - 1);
+        Long foodIdGenerated = foodMaxId.getId() + 1;
+        return foodIdGenerated;
+    }
 }

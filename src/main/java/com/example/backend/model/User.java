@@ -39,8 +39,8 @@ public class User {
 
 //    @NotBlank
     private Date birthday;
-
-    private Boolean is_active;
+    @Column(name = "is_active")
+    private Boolean isActive;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_tracking_id", referencedColumnName = "id")
@@ -68,7 +68,7 @@ public class User {
         this.password = password;
         this.name = name;
         this.birthday = birthday;
-        this.is_active = is_active;
+        this.isActive = is_active;
         this.usersTracking = usersTracking;
         this.roles = roles;
     }
@@ -155,10 +155,10 @@ public class User {
     }
 
     public Boolean getIs_active() {
-        return is_active;
+        return isActive;
     }
 
     public void setIs_active(Boolean is_active) {
-        this.is_active = is_active;
+        this.isActive = is_active;
     }
 }

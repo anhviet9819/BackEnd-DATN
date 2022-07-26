@@ -18,16 +18,31 @@ public class MealsTracking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     private String name;
 
     private String description;
     private String type;
     private Double meal_volume;
+    private Double meal_calories;
+    private Double meal_fat;
+    private Double meal_trans_fat;
+    private Double meal_saturated_fat;
+    private Double meal_cholesterol;
+    private Double meal_diatery_fiber;
+    private Double meal_sodium;
+    private Double meal_protein;
+    private Double meal_potassium;
+    private Double meal_carbohydrates;
+    private Double meal_sugars;
+    private Double meal_vitamin_a;
+    private Double meal_vitamin_c;
+    private Double meal_calcium;
+    private Double meal_iron;
 
     @CreatedDate
     @NotNull
-    private Instant created_at;
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_tracking_id", nullable = false)
@@ -61,7 +76,7 @@ public class MealsTracking {
         this.description = description;
         this.type = type;
         this.meal_volume = meal_volume;
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 
     public MealsTracking(String name, String description, String type, Double meal_volume, Instant created_at, UsersTracking usersTracking) {
@@ -69,7 +84,7 @@ public class MealsTracking {
         this.description = description;
         this.type = type;
         this.meal_volume = meal_volume;
-        this.created_at = created_at;
+        this.createdAt = created_at;
         this.usersTracking = usersTracking;
     }
 
@@ -78,7 +93,7 @@ public class MealsTracking {
         this.description = description;
         this.type = type;
         this.meal_volume = meal_volume;
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 
     public List<MealFood> getMealFoods() {
@@ -95,7 +110,33 @@ public class MealsTracking {
         this.description = description;
         this.type = type;
         this.meal_volume = meal_volume;
-        this.created_at = created_at;
+        this.createdAt = created_at;
+        this.usersTracking = usersTracking;
+        this.mealFoods = mealFoods;
+    }
+
+    public MealsTracking(Long id, String name, String description, String type, Double meal_volume, Double meal_calories, Double meal_fat, Double meal_trans_fat, Double meal_saturated_fat, Double meal_cholesterol, Double meal_diatery_fiber, Double meal_sodium, Double meal_protein, Double meal_potassium, Double meal_carbohydrates, Double meal_sugars, Double meal_vitamin_a, Double meal_vitamin_c, Double meal_calcium, Double meal_iron, Instant createdAt, UsersTracking usersTracking, List<MealFood> mealFoods) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.type = type;
+        this.meal_volume = meal_volume;
+        this.meal_calories = meal_calories;
+        this.meal_fat = meal_fat;
+        this.meal_trans_fat = meal_trans_fat;
+        this.meal_saturated_fat = meal_saturated_fat;
+        this.meal_cholesterol = meal_cholesterol;
+        this.meal_diatery_fiber = meal_diatery_fiber;
+        this.meal_sodium = meal_sodium;
+        this.meal_protein = meal_protein;
+        this.meal_potassium = meal_potassium;
+        this.meal_carbohydrates = meal_carbohydrates;
+        this.meal_sugars = meal_sugars;
+        this.meal_vitamin_a = meal_vitamin_a;
+        this.meal_vitamin_c = meal_vitamin_c;
+        this.meal_calcium = meal_calcium;
+        this.meal_iron = meal_iron;
+        this.createdAt = createdAt;
         this.usersTracking = usersTracking;
         this.mealFoods = mealFoods;
     }
@@ -140,12 +181,132 @@ public class MealsTracking {
         this.meal_volume = meal_volume;
     }
 
+    public Double getMeal_fat() {
+        return meal_fat;
+    }
+
+    public void setMeal_fat(Double meal_fat) {
+        this.meal_fat = meal_fat;
+    }
+
+    public Double getMeal_trans_fat() {
+        return meal_trans_fat;
+    }
+
+    public void setMeal_trans_fat(Double meal_trans_fat) {
+        this.meal_trans_fat = meal_trans_fat;
+    }
+
+    public Double getMeal_saturated_fat() {
+        return meal_saturated_fat;
+    }
+
+    public void setMeal_saturated_fat(Double meal_saturated_fat) {
+        this.meal_saturated_fat = meal_saturated_fat;
+    }
+
+    public Double getMeal_cholesterol() {
+        return meal_cholesterol;
+    }
+
+    public void setMeal_cholesterol(Double meal_cholesterol) {
+        this.meal_cholesterol = meal_cholesterol;
+    }
+
+    public Double getMeal_diatery_fiber() {
+        return meal_diatery_fiber;
+    }
+
+    public void setMeal_diatery_fiber(Double meal_diatery_fiber) {
+        this.meal_diatery_fiber = meal_diatery_fiber;
+    }
+
+    public Double getMeal_sodium() {
+        return meal_sodium;
+    }
+
+    public void setMeal_sodium(Double meal_sodium) {
+        this.meal_sodium = meal_sodium;
+    }
+
+    public Double getMeal_protein() {
+        return meal_protein;
+    }
+
+    public void setMeal_protein(Double meal_protein) {
+        this.meal_protein = meal_protein;
+    }
+
+    public Double getMeal_potassium() {
+        return meal_potassium;
+    }
+
+    public void setMeal_potassium(Double meal_potassium) {
+        this.meal_potassium = meal_potassium;
+    }
+
+    public Double getMeal_carbohydrates() {
+        return meal_carbohydrates;
+    }
+
+    public void setMeal_carbohydrates(Double meal_carbohydrates) {
+        this.meal_carbohydrates = meal_carbohydrates;
+    }
+
+    public Double getMeal_sugars() {
+        return meal_sugars;
+    }
+
+    public void setMeal_sugars(Double meal_sugars) {
+        this.meal_sugars = meal_sugars;
+    }
+
+    public Double getMeal_vitamin_a() {
+        return meal_vitamin_a;
+    }
+
+    public void setMeal_vitamin_a(Double meal_vitamin_a) {
+        this.meal_vitamin_a = meal_vitamin_a;
+    }
+
+    public Double getMeal_vitamin_c() {
+        return meal_vitamin_c;
+    }
+
+    public void setMeal_vitamin_c(Double meal_vitamin_c) {
+        this.meal_vitamin_c = meal_vitamin_c;
+    }
+
+    public Double getMeal_calcium() {
+        return meal_calcium;
+    }
+
+    public void setMeal_calcium(Double meal_calcium) {
+        this.meal_calcium = meal_calcium;
+    }
+
+    public Double getMeal_iron() {
+        return meal_iron;
+    }
+
+    public void setMeal_iron(Double meal_iron) {
+        this.meal_iron = meal_iron;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public Instant getCreated_at() {
-        return created_at;
+        return createdAt;
     }
 
     public void setCreated_at(Instant created_at) {
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 
     public UsersTracking getUsersTracking() {
@@ -161,7 +322,15 @@ public class MealsTracking {
 //        mealFood.getMealsTracking().addFood(mealFood);
     }
 
-//    public Double sumMealVolume(){
+    public Double getMeal_calories() {
+        return meal_calories;
+    }
+
+    public void setMeal_calories(Double meal_calories) {
+        this.meal_calories = meal_calories;
+    }
+
+    //    public Double sumMealVolume(){
 //
 //    }
 //

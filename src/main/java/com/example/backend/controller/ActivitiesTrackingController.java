@@ -2,10 +2,14 @@ package com.example.backend.controller;
 
 import com.example.backend.model.ActivitiesTracking;
 import com.example.backend.model.ListActivities;
+import com.example.backend.repository.ActivitiesTrackingRepository;
 import com.example.backend.repository.UsersTrackingRepository;
 import com.example.backend.service.IActivitiesTrackingService;
 import com.example.backend.service.impl.ListActivitiesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +26,9 @@ public class ActivitiesTrackingController {
     public IActivitiesTrackingService activitiesTrackingService;
 
     @Autowired
+    public ActivitiesTrackingRepository activitiesTrackingRepository;
+
+    @Autowired
     public UsersTrackingRepository usersTrackingRepository;
 
     @Autowired
@@ -29,7 +36,7 @@ public class ActivitiesTrackingController {
 
     @GetMapping("/search")
     public List<ActivitiesTracking> findAll(){
-        return activitiesTrackingService.findAll();
+        return activitiesTrackingRepository.findActivitiesTrackingByOrderByCreatedAtDesc();
     }
 
     @GetMapping("/details/{id}")
@@ -40,6 +47,59 @@ public class ActivitiesTrackingController {
     @GetMapping("/details/userstracking/{userstrackingid}/activitiestracking")
     public List<ActivitiesTracking> findByUserstrackingid(@PathVariable("userstrackingid")Long userstrackingid){
         return activitiesTrackingService.findByUserstrackingId(userstrackingid);
+    }
+
+    @GetMapping("/details/listactivities/{listactivitiesid}")
+    public List<ActivitiesTracking> findByListActivitiesId(@PathVariable("listactivitiesid")Long listactivitiesid){
+        return activitiesTrackingRepository.findActivitiesTrackingByListActivitiesId(listactivitiesid);
+    }
+
+    @GetMapping("/details/userstrackingListActivitiesCreatedAt")
+    public List<ActivitiesTracking> findByuserstrackingIdListActivitiesIdCreatedAtBetween(@RequestParam(required = false) Long usertrackingid,
+                                                                                          @RequestParam(required = false) Instant createdAtStart,
+                                                                                          @RequestParam(required = false) Instant createdAtEnd,
+                                                                                          @RequestParam(required = false) Long listactivitiesid){
+        if(createdAtStart == null && createdAtEnd == null && listactivitiesid == null){
+            return activitiesTrackingRepository.findActivitiesTrackingByUsersTrackingIdOrderByCreatedAtDesc(usertrackingid);
+        }
+        if(createdAtStart == null && createdAtEnd == null){
+            return activitiesTrackingRepository.findActivitiesTrackingByUsersTrackingIdAndListActivitiesIdOrderByCreatedAtDesc(usertrackingid, listactivitiesid);
+        }
+        if(listactivitiesid == null){
+            return activitiesTrackingRepository.findActivitiesTrackingByUsersTrackingIdAndCreatedAtBetweenOrderByCreatedAtDesc(usertrackingid, createdAtStart, createdAtEnd);
+        }
+        return activitiesTrackingRepository.findActivitiesTrackingByUsersTrackingIdAndCreatedAtBetweenAndListActivitiesIdOrderByCreatedAtDesc(usertrackingid, createdAtStart, createdAtEnd, listactivitiesid);
+    }
+
+    @GetMapping("/details/userstrackingListActivitiesCreatedAtPagination")
+    public Page<ActivitiesTracking> findByuserstrackingIdListActivitiesIdCreatedAtBetweenPagination(@RequestParam(required = false) Long usertrackingid,
+                                                                                                    @RequestParam(required = false) Instant createdAtStart,
+                                                                                                    @RequestParam(required = false) Instant createdAtEnd,
+                                                                                                    @RequestParam(required = false) Long listactivitiesid,
+                                                                                                    @RequestParam(defaultValue = "0") int page,
+                                                                                                    @RequestParam(defaultValue = "8")int size){
+//        System.out.println(usertrackingid);
+        Pageable paging = PageRequest.of(page, size);
+        if(createdAtStart == null && createdAtEnd == null && listactivitiesid == null){
+            return activitiesTrackingRepository.findByUsersTrackingIdOrderByCreatedAtDesc(usertrackingid, paging);
+        }
+        if(createdAtStart == null && createdAtEnd == null){
+            return activitiesTrackingRepository.findByUsersTrackingIdAndListActivitiesIdOrderByCreatedAtDesc(usertrackingid, listactivitiesid, paging);
+        }
+        if(listactivitiesid == null){
+            return activitiesTrackingRepository.findByUsersTrackingIdAndCreatedAtBetweenOrderByCreatedAtDesc(usertrackingid, createdAtStart, createdAtEnd, paging);
+        }
+        return activitiesTrackingRepository.findByUsersTrackingIdAndCreatedAtBetweenAndListActivitiesIdOrderByCreatedAtDesc(usertrackingid, createdAtStart, createdAtEnd, listactivitiesid, paging);
+    }
+
+    @GetMapping("/details/userstrackingStartTime")
+    public Boolean findToNotice(@RequestParam(required = false) Long usertrackingid,
+                                @RequestParam(required = false) Instant startTimeStart,
+                                @RequestParam(required = false) Instant startTimeEnd){
+        List<ActivitiesTracking> activitiesTrackingList = activitiesTrackingRepository.findActivitiesTrackingByUsersTrackingIdAndStartTimeBetween(usertrackingid, startTimeStart, startTimeEnd);
+//        System.out.println(activitiesTrackingList);
+        if(activitiesTrackingList.size() != 0) return true;
+        return false;
     }
 
     @PostMapping("/create/userstracking/{usertrackingid}/activitiestracking")

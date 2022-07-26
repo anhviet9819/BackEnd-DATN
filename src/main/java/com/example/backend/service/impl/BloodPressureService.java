@@ -6,6 +6,8 @@ import com.example.backend.service.IBloodPressureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BloodPressureService implements IBloodPressureService{
 
@@ -26,4 +28,9 @@ public class BloodPressureService implements IBloodPressureService{
     public void delete(Long id) {
         bloodPressureRepository.deleteById(id);
     }
+
+//    @Override
+//    public List<BloodPressure> findAllByCreated_atAsc(Long usertrackingid) {
+//        return bloodPressureRepository.findAllByOrderByCreated_atAsc(usertrackingid);
+//    }
 }

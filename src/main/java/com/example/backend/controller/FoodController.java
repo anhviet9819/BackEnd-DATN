@@ -1,11 +1,11 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.MealNutritionDTO;
+import com.example.backend.dto.foodNuFaDto;
 import com.example.backend.exception.DuplicateIdException;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.model.*;
-import com.example.backend.repository.FoodGroupRepository;
-import com.example.backend.repository.FoodRepository;
-import com.example.backend.repository.MealsTrackingRepository;
+import com.example.backend.repository.*;
 import com.example.backend.service.IFoodGroupService;
 import com.example.backend.service.IFoodService;
 import com.example.backend.service.IMealsTrackingService;
@@ -44,6 +44,8 @@ public class FoodController {
     @Autowired
     public FoodRepository foodRepository;
 
+    @Autowired
+    public UserRepository userRepository;
 
     @GetMapping("/search")
     public Page<Food> queryByGroupNameOrAll(
@@ -62,13 +64,34 @@ public class FoodController {
         Pageable paging = PageRequest.of(page, size);
         return foodRepository.findAllFoodByNameContainingOrderById(paging, nameContaining);  // Chua throw exception
     }
-//    @GetMapping("/search")
-//    public Page<Food> findAll(@RequestParam(defaultValue = "0")int page,
-//    @RequestParam(defaultValue = "10")int size,
-//    @RequestParam(defaultValue = "")String nameContaining){
-//        Pageable paging = PageRequest.of(page, size);
-//        return foodRepository.findFoodByNameContaining(paging, nameContaining);
-//    }
+
+    @GetMapping("/search/newQ")
+    public List<foodNuFaDto> newQ(){
+        return foodRepository.newQ();
+    }
+
+    @GetMapping("/searchwithfilters")
+    public Page<Food> getFoodWithFilters(
+            @RequestParam(defaultValue = "",required = false)String foodGroupName,
+            @RequestParam(defaultValue = "0")int page,
+            @RequestParam(defaultValue = "8")int size,
+            @RequestParam(defaultValue = "") String nameContaining){
+//        System.out.println(foodGroupName == "");
+        if(foodGroupName.equals("") == false){
+//            System.out.println(1);
+            Pageable paging = PageRequest.of(page, size);
+            return foodRepository.findAllFoodByFoodGroupNameAndNameContainingOrderById(paging, foodGroupName, nameContaining);
+        }
+        Pageable paging = PageRequest.of(page, size);
+        return foodRepository.findAllFoodByNameContainingOrderById(paging, nameContaining);  // Chua throw exception
+    }
+
+    @GetMapping("/searchbyfoodgroup/{foodgroupid}")
+    public Food findByFoodGroup(@PathVariable("foodgroupid")Long foodgroupid){
+        List<Food> foodList = foodRepository.findFoodByFoodGroupIdOrderById(foodgroupid);
+        return foodList.get(foodList.size() - 1);
+    }
+
 
     @GetMapping("/details/{id}")
     public Food findById(@PathVariable("id")Long id){
@@ -101,7 +124,8 @@ public class FoodController {
         if(food1 != null) throw new DuplicateIdException("Food", food.getId());
 
 //        Long foodGroupThatFoodAdded = foodGroupId;
-        Long foodId = foodGroupId * 100000000 + foodRepository.countFoodByFoodGroupId(foodGroupId) + 1;
+//        Long foodId = foodGroupId * 100000000 + foodRepository.countFoodByFoodGroupId(foodGroupId) + 1;
+        Long foodId = foodService.generateFoodId(foodGroupId);
 
 //        Food foodSave = new Food(foodId, food.getName(), Instant.now(), foodGroup);
 
@@ -214,12 +238,48 @@ public class FoodController {
         // add and create new food
         FoodGroup foodGroup = foodGroupRepository.findByNameContaining(foodVolume.getFood().getFoodGroup().getGroup_name());
         Long foodGroupIdThatFoodAdded = foodGroup.getId();
-        Long foodAddedId = foodGroupIdThatFoodAdded * 100000000 + foodRepository.countFoodByFoodGroupId(foodGroupIdThatFoodAdded) + 1;
+//        Long foodAddedId = foodGroupIdThatFoodAdded * 100000000 + foodRepository.countFoodByFoodGroupId(foodGroupIdThatFoodAdded) + 1;
+        Long foodAddedId = foodService.generateFoodId(foodGroupIdThatFoodAdded);
 
         foodVolume.getFood().setId(foodAddedId);
         foodVolume.getFood().setFoodGroup(foodGroup);
 
-        Food foodAdded1 = foodService.save(new Food(foodAddedId, foodVolume.getFood().getName(), false, "U4" , Instant.now(), foodGroup));
+        Food foodAdded1 = foodService.save(new Food(foodAddedId, foodVolume.getFood().getName(), "Admin"  , "Toàn bộ hệ thống" , Instant.now(), foodGroup));
+        nutritionFactService.save(new NutritionFact(foodAdded1));
+
+        MealFoodId mealFoodId = new MealFoodId(foodAdded1.getId(), mealstrackingid);
+        mealsTracking.addFood(new MealFood(mealFoodId, foodVolume.getFood_volume(), mealsTracking, foodAdded1));
+        mealsTrackingRepository.save(mealsTracking);
+
+        return foodAdded1;
+    }
+
+    @PostMapping("/addfood/mealstracking/{mealstrackingid}")
+    public Food addFood2(@PathVariable("mealstrackingid")Long mealstrackingid,
+                        @RequestBody FoodVolume foodVolume){
+        MealsTracking mealsTracking = mealsTrackingRepository.findById(mealstrackingid).orElse(null);
+        User user = userRepository.findByUsersTrackingId(mealsTracking.getUsersTracking().getId());
+
+        Food food = foodService.findById(foodVolume.getFood().getId());
+        // food is existed
+        if (food != null) {
+            MealFoodId mealFoodId = new MealFoodId(food.getId(), mealstrackingid);
+            mealsTracking.addFood(new MealFood(mealFoodId, foodVolume.getFood_volume(), mealsTracking, food));
+            mealsTrackingRepository.save(mealsTracking);
+//            mealsTrackingService.calculateFoodNutritionAndMealNutritionByMealTrackingId(mealstrackingid);
+            mealsTrackingService.calculateFoodNutritionAndMealNutritionByMealFoodAdding(mealstrackingid,food.getId());
+            return food;
+        }
+
+        // add and create new food
+        FoodGroup foodGroup = foodGroupRepository.findByNameContaining(foodVolume.getFood().getFoodGroup().getGroup_name());
+        Long foodGroupIdThatFoodAdded = foodGroup.getId();
+        Long foodAddedId = foodService.generateFoodId(foodGroupIdThatFoodAdded);
+
+        foodVolume.getFood().setId(foodAddedId);
+        foodVolume.getFood().setFoodGroup(foodGroup);
+
+        Food foodAdded1 = foodService.save(new Food(foodAddedId, foodVolume.getFood().getName(), foodVolume.getFood().getLanguage(), user.getUsername(), "Chỉ người tạo ra" , Instant.now(), foodVolume.getFood().getIs_ingredient(), foodGroup));
         nutritionFactService.save(new NutritionFact(foodAdded1));
 
         MealFoodId mealFoodId = new MealFoodId(foodAdded1.getId(), mealstrackingid);

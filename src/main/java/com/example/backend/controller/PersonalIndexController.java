@@ -7,9 +7,15 @@ import com.example.backend.repository.PersonalIndexRepository;
 import com.example.backend.repository.UsersTrackingRepository;
 import com.example.backend.service.IPersonalIndexService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -37,6 +43,40 @@ public class PersonalIndexController {
     @GetMapping("/userstracking/{userstrackingid}/personalindex")
     public List<PersonalIndex> findByUsersTrackingId(@PathVariable("userstrackingid") Long userstrackingid){
         return personalIndexRepository.findAllByUsersTrackingId(userstrackingid);
+    }
+
+    @GetMapping("/userstracking/{userstrackingid}/pagination")
+    public Page<PersonalIndex> findByUsersTrackingIdPagination(@PathVariable("userstrackingid") Long userstrackingid,
+                                                               @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "8")int size,
+                                                               @RequestParam()String sorting){
+        Pageable paging = PageRequest.of(page, size);
+        if(sorting.equals("desc") == true){
+            return personalIndexRepository.findAllByUsersTrackingIdOrderByCreatedAtDescPagination(userstrackingid, paging);
+        }
+        else return personalIndexRepository.findAllByUsersTrackingIdOrderByCreatedAtAscPagination(userstrackingid, paging);
+    }
+
+    @GetMapping("/userstracking/{userstrackingid}")
+    public List<PersonalIndex> findByUsersTrackingIdFilters(@PathVariable("userstrackingid") Long userstrackingid,
+                                                            @RequestParam()String sorting){
+//        System.out.println(sorting);
+        if(sorting.equals("desc") == true){
+            return personalIndexRepository.findAllByUsersTrackingIdOrderByCreatedAtDesc(userstrackingid);
+        }
+        else return personalIndexRepository.findAllByUsersTrackingIdOrderByCreatedAtAsc(userstrackingid);
+    }
+
+    @GetMapping("/bieudo/{usertrackingid}")
+    public List<PersonalIndex> bieudoThongke(@PathVariable("usertrackingid") Long usertrackingid,
+                                             @RequestParam() String starttime,
+                                             @RequestParam() String endtime) throws ParseException {
+        if(starttime == "" && endtime == ""){
+         return personalIndexRepository.findAllByUsersTrackingIdOrderByCreatedAtAsc(usertrackingid);
+        }
+        Date start1 = new SimpleDateFormat("yyyy-MM-dd").parse(starttime);
+        Date end1 = new SimpleDateFormat("yyyy-MM-dd").parse(endtime);
+        return personalIndexRepository.bieudoThongke(usertrackingid, start1, end1);
     }
 
     @PostMapping("/userstracking/{userstrackingid}/personalindex")
