@@ -10,12 +10,24 @@ public class JwtResponse {
     private String email;
     private List<String> roles;
 
+    private Boolean is_active;
+
     public JwtResponse(String accessToken, Long id, String username, String email, List<String> roles) {
         this.token = accessToken;
         this.id = id;
         this.username = username;
         this.email = email;
         this.roles = roles;
+    }
+
+    public JwtResponse(String token, Long id, String username, String email, List<String> roles, Boolean is_active) {
+        this.token = token;
+//        this.type = type;
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.roles = roles;
+        this.is_active = is_active;
     }
 
     public String getAccessToken() {
@@ -60,5 +72,13 @@ public class JwtResponse {
 
     public List<String> getRoles() {
         return roles;
+    }
+
+    public Boolean getIs_active() {
+        return is_active;
+    }
+
+    public void setIs_active(Boolean is_active) {
+        this.is_active = is_active;
     }
 }

@@ -15,8 +15,10 @@ public class ActivitiesTracking {
     private Long id;
 
     private Double calo_loss;
-    private Instant created_at;
-    private Instant start_time;
+    @Column(name = "created_at")
+    private Instant createdAt;
+    @Column(name = "start_time")
+    private Instant startTime;
     private Instant end_time;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -32,8 +34,8 @@ public class ActivitiesTracking {
     public ActivitiesTracking(Long id, Double calo_loss, Instant created_at, Instant start_time, Instant end_time, UsersTracking usersTracking) {
         this.id = id;
         this.calo_loss = calo_loss;
-        this.created_at = created_at;
-        this.start_time = start_time;
+        this.createdAt = created_at;
+        this.startTime = start_time;
         this.end_time = end_time;
         this.usersTracking = usersTracking;
     }
@@ -42,24 +44,24 @@ public class ActivitiesTracking {
     }
 
     public ActivitiesTracking(Instant created_at, Instant start_time, Instant end_time, UsersTracking usersTracking) {
-        this.created_at = created_at;
-        this.start_time = start_time;
+        this.createdAt = created_at;
+        this.startTime = start_time;
         this.end_time = end_time;
         this.usersTracking = usersTracking;
     }
 
     public ActivitiesTracking(Double calo_loss, Instant created_at, Instant start_time, Instant end_time, UsersTracking usersTracking, ListActivities listActivities) {
         this.calo_loss = calo_loss;
-        this.created_at = created_at;
-        this.start_time = start_time;
+        this.createdAt = created_at;
+        this.startTime = start_time;
         this.end_time = end_time;
         this.usersTracking = usersTracking;
         this.listActivities = listActivities;
     }
 
     public ActivitiesTracking(Instant created_at, Instant start_time, Instant end_time) {
-        this.created_at = created_at;
-        this.start_time = start_time;
+        this.createdAt = created_at;
+        this.startTime = start_time;
         this.end_time = end_time;
     }
 
@@ -80,19 +82,19 @@ public class ActivitiesTracking {
     }
 
     public Instant getCreated_at() {
-        return created_at;
+        return createdAt;
     }
 
     public void setCreated_at(Instant created_at) {
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 
     public Instant getStart_time() {
-        return start_time;
+        return startTime;
     }
 
     public void setStart_time(Instant start_time) {
-        this.start_time = start_time;
+        this.startTime = start_time;
     }
 
     public Instant getEnd_time() {

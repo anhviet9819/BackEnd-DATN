@@ -76,9 +76,11 @@ public class MealFoodController {
         MealFood mealFoodDelete = mealFoodRepository.findByMealsTrackingIdAndFoodId(mealTrackingId, foodId);
         mealFoodRepository.delete(mealFoodDelete);
 
-        Double mealCaloriesServing = mealsTrackingService.calculateMealVolumeByMealTrackingId(mealTrackingId);
-        mealsTracking.setMeal_volume(mealCaloriesServing);
-        mealsTrackingService.save(mealsTracking);
+//        Double mealCaloriesServing = mealsTrackingService.calculateMealVolumeByMealTrackingId(mealTrackingId);
+//        mealsTracking.setMeal_volume(mealCaloriesServing);
+//        mealsTrackingService.save(mealsTracking);
 //        return ResponseEntity.ok().build();
+
+        mealsTrackingService.calculateFoodNutritionAndMealNutritionByMealTrackingId(mealTrackingId);
     }
 }

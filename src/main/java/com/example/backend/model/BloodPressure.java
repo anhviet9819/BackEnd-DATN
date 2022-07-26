@@ -17,7 +17,8 @@ public class BloodPressure {
     private Integer systolic;
 
     @CreatedDate
-    private Instant created_at;
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_tracking_id", referencedColumnName = "id")
@@ -30,7 +31,7 @@ public class BloodPressure {
     public BloodPressure(Integer diastolic, Integer systolic, Instant created_at, UsersTracking usersTracking) {
         this.diastolic = diastolic;
         this.systolic = systolic;
-        this.created_at = created_at;
+        this.createdAt = created_at;
         this.usersTracking = usersTracking;
     }
 
@@ -59,11 +60,11 @@ public class BloodPressure {
     }
 
     public Instant getCreated_at() {
-        return created_at;
+        return createdAt;
     }
 
     public void setCreated_at(Instant created_at) {
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 
     public UsersTracking getUsersTracking() {

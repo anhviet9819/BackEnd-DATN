@@ -40,6 +40,30 @@ public class ListActivitiesController {
         return listActivitiesRepository.findListActivitiesByNameContainingOrderById(paging, nameContaining);
     }
 
+    @GetMapping("/searchwithfilters")
+    public Page<ListActivities> findAllWithFilters(@RequestParam(required = false)String sort,
+                                        @RequestParam(defaultValue = "0")int page,
+                                        @RequestParam(defaultValue = "8")int size,
+                                        @RequestParam(defaultValue = "") String nameContaining){
+        Pageable paging = PageRequest.of(page, size);
+        if(sort.equals("") == true){
+            return listActivitiesRepository.findListActivitiesByNameContainingOrderById(paging, nameContaining);
+        }
+        else{
+            if(sort.equals("asc") == true){
+                return listActivitiesRepository.findListActivitiesByNameContainingOrderByCaloPerHourAsc(paging, nameContaining);
+            }
+            else{
+                return listActivitiesRepository.findListActivitiesByNameContainingOrderByCaloPerHourDesc(paging, nameContaining);
+            }
+        }
+    }
+
+    @GetMapping("/searchnofilters")
+    public List<ListActivities> findAllNoFilters(){
+        return listActivitiesRepository.findAll();
+    }
+
     @GetMapping("/details/{id}")
     public ListActivities getActivityById(@PathVariable("id") Long id){
         return service.findById(id);

@@ -12,4 +12,5 @@ public interface IFoodService {
     Food findByExistName(String foodName);
     Food save(Food food);
     void delete(Long id);
+    Long generateFoodId(Long foodGroupId);
 }

@@ -111,15 +111,19 @@ public class NutritionFactController {
             nutritionFact.setUpdated_at(nutritionFactRequest.getUpdated_at());
         }
         NutritionFact nutritionFact1 = nutritionFactService.save(nutritionFact);
-        // update lai mealCalories khi update nutritionFact
+
+        // update lai mealNutrition khi update nutritionFact
         List<MealFood> mealFoods = mealFoodRepository.findMealFoodByFoodId(foodid);
         if(mealFoods != null){
+//            for(MealFood mealFoodEl: mealFoods){
+//                Double mealCaloriesUpdate = 0.0;
+//                mealCaloriesUpdate = mealsTrackingService.calculateMealVolumeByMealTrackingId(mealFoodEl.getId().getMeal_tracking_id());
+//                MealsTracking mealsTrackingUpdate = mealsTrackingService.findById(mealFoodEl.getId().getMeal_tracking_id());
+//                mealsTrackingUpdate.setMeal_volume(mealCaloriesUpdate);
+//                mealsTrackingService.save(mealsTrackingUpdate);
+//            }
             for(MealFood mealFoodEl: mealFoods){
-                Double mealCaloriesUpdate = 0.0;
-                mealCaloriesUpdate = mealsTrackingService.calculateMealVolumeByMealTrackingId(mealFoodEl.getId().getMeal_tracking_id());
-                MealsTracking mealsTrackingUpdate = mealsTrackingService.findById(mealFoodEl.getId().getMeal_tracking_id());
-                mealsTrackingUpdate.setMeal_volume(mealCaloriesUpdate);
-                mealsTrackingService.save(mealsTrackingUpdate);
+             mealsTrackingService.calculateFoodNutritionAndMealNutritionByMealFoodAdding(mealFoodEl.getMealsTracking().getId(), mealFoodEl.getFood().getId());
             }
         }
 

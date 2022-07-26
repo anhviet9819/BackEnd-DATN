@@ -3,14 +3,22 @@ package com.example.backend.controller;
 import com.example.backend.exception.DuplicateIdException;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.model.BloodPressure;
+import com.example.backend.model.DiabatesMelitiyus;
 import com.example.backend.model.PersonalIndex;
 import com.example.backend.repository.BloodPressureRepository;
 import com.example.backend.repository.UsersTrackingRepository;
 import com.example.backend.service.IBloodPressureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -30,6 +38,11 @@ public class BloodPressureController {
         return bloodPressureRepository.findAll();
     }
 
+//    @GetMapping("/searchorderby")
+//    public List<BloodPressure> getOrderBy(){
+//        return bloodPressureRepository.findAllByOrderByCreated_at();
+//    }
+
     @GetMapping("/details/{id}")
     public BloodPressure findById(@PathVariable("id") Long id){
         return bloodPressureService.findById(id);
@@ -38,6 +51,30 @@ public class BloodPressureController {
     @GetMapping("/userstracking/{userstrackingid}/bloodpressure")
     public List<BloodPressure> findByUsersTrackingId(@PathVariable("userstrackingid") Long userstrackingid){
         return bloodPressureRepository.findAllByUsersTrackingId(userstrackingid);
+    }
+
+    @GetMapping("/userstracking/{userstrackingid}/pagination")
+    public Page<BloodPressure> findByUsersTrackingIdPagination(@PathVariable("userstrackingid") Long userstrackingid,
+                                                               @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "8")int size,
+                                                               @RequestParam()String sorting){
+        Pageable paging = PageRequest.of(page, size);
+        if(sorting.equals("desc") == true){
+            return bloodPressureRepository.findAllByUsersTrackingIdOrderByCreatedAtDescPagination(userstrackingid, paging);
+        }
+        else return bloodPressureRepository.findAllByUsersTrackingIdOrderByCreatedAtAscPagination(userstrackingid, paging);
+    }
+
+    @GetMapping("/bieudo/{usertrackingid}")
+    public List<BloodPressure> bieudoThongke(@PathVariable("usertrackingid") Long usertrackingid,
+                                                 @RequestParam() String starttime,
+                                                 @RequestParam() String endtime) throws ParseException {
+        if(starttime == "" && endtime == ""){
+            return bloodPressureRepository.findAllByUsersTrackingIdOrderByCreatedAtAsc(usertrackingid);
+        }
+        Date start1 = new SimpleDateFormat("yyyy-MM-dd").parse(starttime);
+        Date end1 = new SimpleDateFormat("yyyy-MM-dd").parse(endtime);
+        return bloodPressureRepository.bieudoThongke(usertrackingid, start1, end1);
     }
 
     @PostMapping("/userstracking/{userstrackingid}/bloodpressure")

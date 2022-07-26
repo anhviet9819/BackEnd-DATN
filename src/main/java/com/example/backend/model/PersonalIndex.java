@@ -19,7 +19,8 @@ public class PersonalIndex {
     private Double height;
     private Double weight;
     @CreatedDate
-    private Instant created_at;
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_tracking_id", referencedColumnName = "id")
@@ -38,7 +39,7 @@ public class PersonalIndex {
         this.id = id;
         this.height = height;
         this.weight = weight;
-        this.created_at = created_at;
+        this.createdAt = created_at;
         this.usersTracking = usersTracking;
     }
 
@@ -47,7 +48,7 @@ public class PersonalIndex {
         this.height = height;
         this.weight = weight;
         this.usersTracking = usersTracking;
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 
     public Long getId() {
@@ -75,11 +76,11 @@ public class PersonalIndex {
     }
 
     public Instant getCreated_at() {
-        return created_at;
+        return createdAt;
     }
 
     public void setCreated_at(Instant created_at) {
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 
     public UsersTracking getUsersTracking() {

@@ -13,4 +13,9 @@ import java.util.List;
 public interface ListActivitiesRepository extends JpaRepository<ListActivities,Long> {
     ListActivities findByName(String name);
     Page<ListActivities> findListActivitiesByNameContainingOrderById(Pageable pageable, String name);
+
+    Page<ListActivities> findListActivitiesByNameContainingOrderByCaloPerHourDesc(Pageable pageable, String name);
+    Page<ListActivities> findListActivitiesByNameContainingOrderByCaloPerHourAsc(Pageable pageable, String name);
+//    Page<ListActivities> findListActivitiesByNameContainingOrderByIdCaloPerHourDesc(Pageable pageable, String name);
+
 }

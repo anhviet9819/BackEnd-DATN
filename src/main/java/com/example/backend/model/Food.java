@@ -4,6 +4,8 @@ import com.example.backend.service.IFoodGroupService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sun.istack.NotNull;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -28,7 +30,7 @@ public class Food {
 
     private String image;
     private String language;
-    private Boolean owner;
+    private String owner;
     private String scope;
     private Instant created_at;
     private LocalTime updated_at;
@@ -49,6 +51,7 @@ public class Food {
 //    private Set<MealsTracking> mealsTracking = new HashSet<>();
 
     @OneToOne(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @Fetch(FetchMode.JOIN)
     private NutritionFact nutritionFact;
 
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL)
@@ -59,7 +62,7 @@ public class Food {
     @JsonIgnore
     private List<ExtraNutrition> extraNutritions = new ArrayList<>();
 
-    public Food(Long id, String name, String image, String language, Boolean owner, String scope, Instant created_at, LocalTime updated_at, Boolean is_ingredient, FoodGroup foodGroup) {
+    public Food(Long id, String name, String image, String language, String owner, String scope, Instant created_at, LocalTime updated_at, Boolean is_ingredient, FoodGroup foodGroup) {
         this.id = id;
         this.name = name;
         this.image = image;
@@ -85,12 +88,23 @@ public class Food {
         this.foodGroup = foodGroup;
     }
 
-    public Food(Long id, String name, Boolean owner, String scope, Instant created_at, FoodGroup foodGroup) {
+    public Food(Long id, String name, String owner, String scope, Instant created_at, FoodGroup foodGroup) {
         this.id = id;
         this.name = name;
         this.owner = owner;
         this.scope = scope;
         this.created_at = created_at;
+        this.foodGroup = foodGroup;
+    }
+
+    public Food(Long id, String name, String language, String owner, String scope, Instant created_at, Boolean is_ingredient, FoodGroup foodGroup) {
+        this.id = id;
+        this.name = name;
+        this.language = language;
+        this.owner = owner;
+        this.scope = scope;
+        this.created_at = created_at;
+        this.is_ingredient = is_ingredient;
         this.foodGroup = foodGroup;
     }
 
@@ -130,11 +144,11 @@ public class Food {
         this.language = language;
     }
 
-    public Boolean getOwner() {
+    public String getOwner() {
         return owner;
     }
 
-    public void setOwner(Boolean owner) {
+    public void setOwner(String owner) {
         this.owner = owner;
     }
 
